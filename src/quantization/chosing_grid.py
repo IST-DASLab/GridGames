@@ -11,7 +11,7 @@ try:
 except ImportError:  # the NumPy path and the self-test still work without torch
     torch = None
 
-from inference_lib.src.fp_quant.module.triton.PO2_quant_dequant import fake_quant_dequant_N_triton
+from inference_lib.triton.PO2_quant_dequant import fake_quant_dequant_N_triton
 
 try:
     import triton

@@ -10,12 +10,12 @@ import os
 
 import torch
 from transformers import AutoModelForCausalLM
-from inference_lib.src.fp_quant.module.triton.PO2_quant_dequant import (
+from inference_lib.triton.PO2_quant_dequant import (
     fake_quant_dequant_N_triton,   
     quantize_N_triton,
     dequantize_N_triton,
 )
-from inference_lib.src.fp_quant.module.triton.PO2 import (
+from inference_lib.triton.PO2 import (
     fake_quant_grid_triton,
     fake_quant_dual_triton,
 )

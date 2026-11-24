@@ -54,8 +54,8 @@ def parse_args(argv: list[str] = None) -> argparse.Namespace:
     parser.add_argument(
         "--format",
         type=str,
-        default="int",
-        choices=["int", "fp", "nvfp", "mxfp"],
+        default="nvfp",
+        choices=["fp", "nvfp", "mxfp"],
         help="Quantization format.",
     )
     parser.add_argument(
@@ -137,22 +137,11 @@ def parse_args(argv: list[str] = None) -> argparse.Namespace:
         choices=["identity", "hadamard", "wush"],
         help="The transform class."
     )
-    parser.add_argument(
-        "--hadamard_group_size",
-        type=int,
-        default=128,
-        help="Hadamard group size"
-    )
     # Logging params
     parser.add_argument(
         "--log_wandb",
         action="store_true",
         help="Whether to log to wandb."
-    )
-    # Misc params
-    parser.add_argument(
-        "--verbose",
-        action="store_true"
     )
     parser.add_argument(
         "--dtype",
@@ -164,9 +153,7 @@ def parse_args(argv: list[str] = None) -> argparse.Namespace:
     parser.add_argument("--seed", default=42, type=int, help="random seed.")
     parser.add_argument("--cpu_offload_modules", action="store_true", help="whether to offload modules to CPU.")
     parser.add_argument("--cpu_offload_activations", action="store_true", help="whether to offload activations to CPU.")
-    parser.add_argument("--amp", action="store_true", help="whether to enable fp16 autocasting.")
     parser.add_argument("--compile", action="store_true", help="whether to use torch.compile.")
-    parser.add_argument("--fuse_global_scale", action="store_true", help="whether to fuse global scale in qkv and gate_up.")
     # Eval params
     parser.add_argument("--eval_perplexity", action="store_true", help="whether to eval perplexity after quantization.")
     parser.add_argument("--eval_downstream_tasks", action="store_true", help="whether to eval downstream (OpenLLM v1) tasks after quantization.")

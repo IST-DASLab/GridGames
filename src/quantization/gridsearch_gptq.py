@@ -4,7 +4,7 @@ import itertools
 import torch
 from torch import nn
 from transformers import PreTrainedModel
-from inference_lib.src.fp_quant.module.triton.PO2_quant_dequant import quantize_N_triton, dequantize_N_triton
+from inference_lib.triton.PO2_quant_dequant import quantize_N_triton, dequantize_N_triton
 from .chosing_grid import search_M, search_M_hessian, generate_fp_codebook
 
 import scipy.linalg

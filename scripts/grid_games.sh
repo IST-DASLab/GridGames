@@ -36,7 +36,6 @@ WEIGHT_CODEBOOK_NAMES=${WEIGHT_CODEBOOK_NAMES-"fp4_e2m1"}
 ACT_CODEBOOK_NAMES=${ACT_CODEBOOK_NAMES-"fp4_e2m1"}
 
 TRANSFORM_CLASS=${TRANSFORM_CLASS:-"identity"}
-HADAMARD_GROUP_SIZE=${HADAMARD_GROUP_SIZE:-16}
 
 EVAL_PERPLEXITY=${EVAL_PERPLEXITY:-1}
 EVAL_OPENLLM=${EVAL_OPENLLM:-1}
@@ -108,8 +107,8 @@ CODEBOOK_ARGS=""
 W_CODEBOOK_SLUG=$(IFS=- ; echo "${W_CODEBOOKS[*]:-none}")
 A_CODEBOOK_SLUG=$(IFS=- ; echo "${A_CODEBOOKS[*]:-none}")
 
-export WANDB_ENTITY=ist-daslab
-export WANDB_PROJECT="GRID_SEARCH_MXFP_SWEEP"
+export WANDB_ENTITY=grid_games
+export WANDB_PROJECT="GRID_SEARCH"
 export WANDB_NAME="${MODEL}/${FORMAT}-w${W_BITS}-a${A_BITS}-${METHOD_NAME}-${TRANSFORM_CLASS}-w_${W_CODEBOOK_SLUG}-a_${A_CODEBOOK_SLUG}${ADAPTIVE_SLUG}-${ADDITIONAL_NAME}"
 
 echo "Starting quantization with the following settings:"
@@ -122,7 +121,6 @@ echo "Activation Group Size: $A_GROUP_SIZE"
 echo "Transform Class: $TRANSFORM_CLASS"
 echo "Adaptive Grids: $ADAPTIVE_GRIDS (n_books=$N_BOOKS, grid_size=$GRID_SIZE)"
 echo "SEED: $SEED"
-echo "Hadamard Group Size: $HADAMARD_GROUP_SIZE"
 echo "LM Eval Batch Size: $LM_EVAL_BATCH_SIZE"
 echo "LM Eval Batch Size MMLU/GSM8K: $LM_EVAL_BATCH_SIZE_MMLU_GSM8K"
 echo "WANDB_PROJECT: $WANDB_PROJECT"
@@ -139,7 +137,6 @@ python model_quant.py \
     --transform_class="${TRANSFORM_CLASS}" \
     ${SCRIPT_ARGS} \
     ${CODEBOOK_ARGS} \
-    --hadamard_group_size="${HADAMARD_GROUP_SIZE}" \
     --dataset_name_or_path="fineweb-edu" \
     --num_sequences="${NUM_SEQUENCES}" \
     --sequence_length=2048 \
@@ -149,6 +146,4 @@ python model_quant.py \
     --disable_thinking \
     --seed="${SEED}" \
     --lm_eval_tasks ${LM_EVAL_TASKS} \
-    --gen_kwargs="temperature=1.0,do_sample=True,top_k=20,top_p=0.95" \
-    --fuse_global_scale \
-    --amp
+    --gen_kwargs="temperature=1.0,do_sample=True,top_k=20,top_p=0.95"
