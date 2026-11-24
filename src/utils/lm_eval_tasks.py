@@ -38,7 +38,6 @@ LM_EVAL_GROUPS = [
             LMEvalTask("arc_challenge", wandb_key="eval/oneshot"),
             LMEvalTask("lambada", wandb_key="eval/oneshot"),
             LMEvalTask("piqa", wandb_key="eval/oneshot"),
-            LMEvalTask("hellaswag", wandb_key="eval/oneshot"),
         ],
     ),
     LMEvalGroup(
