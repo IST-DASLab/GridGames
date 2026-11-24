@@ -1,5 +1,5 @@
 import torch
-import inference_lib.triton as triton
+import triton
 import triton.language as tl
 
 
