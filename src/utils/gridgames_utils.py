@@ -1,6 +1,6 @@
 import torch
 
-from inference_lib.triton.PO2 import fake_quant_dual_triton, fake_quant_grid_triton
+from inference_lib.triton_kernels.PO2 import fake_quant_dual_triton, fake_quant_grid_triton
 
 
 

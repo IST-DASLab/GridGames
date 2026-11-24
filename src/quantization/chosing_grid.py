@@ -11,7 +11,7 @@ try:
 except ImportError:  # the NumPy path and the self-test still work without torch
     torch = None
 
-from inference_lib.triton.PO2_quant_dequant import fake_quant_dequant_N_triton
+from inference_lib.triton_kernels.PO2_quant_dequant import fake_quant_dequant_N_triton
 
 try:
     import triton
@@ -492,7 +492,7 @@ def search_M(x, candidates, Ms=(2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 7.5, ), k=16, gs=3
         blocks, scales = e8m0_scales_for_M(xc, M, gs)       # blocks: (rows, n_groups, gs)
         x_scaled = blocks / scales.unsqueeze(-1)            # every block max lands in (M/2, M]
         books, assign, loss, info = select_codebooks(candidates, x_scaled, k=k,
-                                                     n_books=n_books, group_size=gs, scale_quant_type='e8m0')
+                                                     n_books=n_books, group_size=gs)
 
         # one 1-D grid per book; per-group book choice from `assign`
         grids = [books[j].float().cuda() for j in range(n_books)]
