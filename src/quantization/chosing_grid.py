@@ -484,14 +484,15 @@ def e8m0_scales_for_M(x, M, block_size=32):
     scales = torch.where(amax == 0, torch.ones_like(scales), scales)
     return blocks, scales
 
-def search_M(x, candidates, Ms=(2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 7.5, ), k=16, gs=32, n_books=2):
+def search_M(x, candidates, Ms=(2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 7.5, ), k=16, gs=32, n_books=2, scale_quant_type='e8m0'):
+    assert scale_quant_type == "e8m0", "adaptive grid search assumes E8M0 scales (NVFP/E4M3 not implemented yet)"
     xc = x.cuda().float()
     results = {}
     for M in Ms:
         blocks, scales = e8m0_scales_for_M(xc, M, gs)       # blocks: (rows, n_groups, gs)
         x_scaled = blocks / scales.unsqueeze(-1)            # every block max lands in (M/2, M]
         books, assign, loss, info = select_codebooks(candidates, x_scaled, k=k,
-                                                     n_books=n_books, group_size=gs)
+                                                     n_books=n_books, group_size=gs, scale_quant_type='e8m0')
 
         # one 1-D grid per book; per-group book choice from `assign`
         grids = [books[j].float().cuda() for j in range(n_books)]
@@ -521,7 +522,8 @@ def h_err(w_hat, w, H):
     return ((d @ H) * d).sum().item() / ((w.float() @ H) * w.float()).sum().item()
 
 
-def search_M_hessian(x, H, H_eval, candidates, Ms=(4.0, 5.0, 6.0, 7.5), k=16, gs=32, n_books=2):
+def search_M_hessian(x, H, H_eval, candidates, Ms=(4.0, 5.0, 6.0, 7.5), k=16, gs=32, n_books=2, scale_quant_type='e8m0'):
+    assert scale_quant_type == "e8m0", "adaptive grid search assumes E8M0 scales (NVFP/E4M3 not implemented yet)"
     xc = x.cuda().float()
     dH = torch.diagonal(H).to(xc.device)
     results = {}

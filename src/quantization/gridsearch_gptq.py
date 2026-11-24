@@ -287,6 +287,7 @@ def adaptive_grid_search(
         candidates: torch.Tensor = generate_fp_codebook("fp6_e2m3fn"),
         n_books: int = 2,
         k: int = 16,
+        scale_quant_type: "str" = "e8m0"
 ) -> list[torch.Tensor]:
     """
     search n_books grids in the transformed domain, i.e. where block_transform_gptq_babai_inner quantizes
@@ -316,14 +317,14 @@ def adaptive_grid_search(
     weight_transformed: torch.Tensor = block_transform(weight.to(dtype=high_dtype), transform=transform_basis).float()  # (R, C)
 
     if hessian is None:
-        best_M, res = search_M(weight_transformed, candidates, k=k, gs=block_size, n_books=n_books)
+        best_M, res = search_M(weight_transformed, candidates, k=k, gs=block_size, n_books=n_books,scale_quant_type=scale_quant_type)
         books = res[best_M][1]
     else:
         transform_full: torch.Tensor = torch.block_diag(*transform_basis)  # (C, C)
         rotate = lambda h: (transform_full @ h.to(dtype=high_dtype, device=device) @ transform_full.transpose(-2, -1)).float()  # (C, C)
         hessian_transformed: torch.Tensor = rotate(hessian)
         hessian_hold_transformed: torch.Tensor = rotate(hessian_hold) if hessian_hold is not None else hessian_transformed
-        best_M, res = search_M_hessian(weight_transformed, hessian_transformed, hessian_hold_transformed, candidates, k=k, gs=block_size, n_books=n_books)
+        best_M, res = search_M_hessian(weight_transformed, hessian_transformed, hessian_hold_transformed, candidates, k=k, gs=block_size, n_books=n_books, scale_quant_type=scale_quant_type)
         books = res[best_M]['books']
 
     return [books[j].float().to(device) for j in range(n_books)]
@@ -371,6 +372,7 @@ def quantize_layers(
             block_size=block_size,
             n_books=args.n_books,
             k=args.grid_size,
+            scale_quant_type=scale_quant_type
         )
         print("using", grids_w)
         assert len(grids_w) == args.n_books
